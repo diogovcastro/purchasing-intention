@@ -1,0 +1,40 @@
+Prompt 001:
+Dados os atributos e o link a seguir quero que você leia descrição em inglês e me retorne a descrição específica de cada um dos atributos:
+
+Atributos: Administrative, Administrative_Duration, Informational, Informational_Duration, ProductRelated, ProductRelated_Duration, BounceRates, ExitRates, PageValues, SpecialDay, Month, OperatingSystems, Browser, Region, TrafficType, VisitorType, Weekend, Revenue
+
+Link: https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset
+
+Resultado responde: A, Descrição dos atributos
+
+Prompt 002:
+Gere um notebook de analise exploratória analisando o desbalanceamento das classes, valores ausentes, duplicadas, outliers e de ideia de outras possíveis inconsistências para eu analisar. Escreva um código também com gráficos e tabelas para eu compreender melhor os dados.
+
+Resultado responde: A, análise da distribuição das classes, identificação de valores ausentes, duplicatas, possíveis inconsistências e outras características relevantes, gráficos ou tabelas que contribuam para a compreensão dos dados.
+
+Prompt 003: 
+Com na nossa analise do EDA faça a implementação do que esta sendo dito:
+- Remover duplicatas para todos os algoritmos. Com base na EDA, verificamos que alguns registros estão duplicados. Devemos fazer sua remoção principalmente porque vamos usar o k-fold cross validation.
+- Remover dimensões para os algoritmos KNN e MLP. Com base no gráfico de correlações, verificamos uma correlação clara entre os pares (Administrative, Administrative_Duration), (Informational, Informational_Duration) e (ProductRelated, ProductRelated_Duration).
+- Usar min-max no KNN, para os atributos ficarem na mesma escala.
+- Usar padronização (z-score) no MLP, para os atributos numéricos ficarem centrados em 0 e com desvio padrão 1. A rede aprende por gradiente, e entradas em escalas muito diferentes deixam o treino instável e lento: por exemplo, ProductRelated_Duration chega a 63.973, enquanto ExitRates não passa de 0,2.
+- Usar one-hot no KNN e no MLP para converter os atributos categóricos em numéricos, já que vamos usar uma métrica de distância, que só lida com números.
+- Manter os atributos categóricos como códigos inteiros no Random Forest. OperatingSystems, Browser, Region e TrafficType já são inteiros; Month e VisitorType precisam ser convertidos em códigos. As árvores dividem os dados por limiares e não calculam distâncias, então os códigos funcionam e ainda permitem separar grupos de categorias. Com one-hot, o TrafficType viraria 20 colunas binárias, cada uma raramente escolhida para divisão.
+- Agrupar categorias raras no KNN e no MLP, com o objetivo de reduzir o ruído nos algoritmos.
+- Tratar o desbalanceamento em todos os algoritmos. Com base na EDA, verificamos que 84,5% das sessões são "não comprou" e 15,5% são "comprou" (razão de 5,5 : 1). Sem tratamento, os algoritmos tendem a favorecer a classe majoritária: um classificador que sempre responde "não comprou" já acerta 84,5%.
+  - KNN: sobreamostragem da classe minoritária, aplicada só nos folds de treino do k-fold. O KNN não aceita pesos por classe, e com 84,5% de "não comprou" os vizinhos mais próximos tendem a ser dessa classe. Deve-se usar o SMOTENC ou a sobreamostragem aleatória, porque o SMOTE comum interpolaria as colunas one-hot e criaria valores sem sentido, como 0,4.
+  - Random Forest: class_weight="balanced", que dá a cada classe um peso inversamente proporcional à sua frequência. Assim, errar uma sessão "comprou" pesa cerca de 5,5 vezes mais, sem alterar os dados.
+  - Gradient Boosting: class_weight="balanced", pelo mesmo motivo do Random Forest.
+  - MLP: sobreamostragem da classe minoritária, aplicada só nos folds de treino, já que o MLPClassifier do scikit-learn não aceita pesos por classe.
+
+Prompt 004
+Agora com base no que foi feito no pre-processamento implemente o código testando diferentes parâmetros para cada algoritmo, use as métricas de precisão, recall, f1-score, PR-AUC e faça uma matriz de confusão no final.
+
+Prompt 005
+Revise o relatório procurando oportunidades de melhoria.
+
+Prompt 006
+Agora gere o .tex e .pdf usando latex, o random forest não foi feito em sala de aula, as matrizes de confusão devem estar em um 2x2 (2 matrizes por linha) ao invez de uma linha (melhorar vizualização sem alterar matrizes), não precisa colocar a formula de mcc, acurácia, acurácia balanceada. Também edite o arquivo docx com essas alterações e o exporte para pdf.
+
+Prompt Slides:
+Refaça os slides usando a paleta de cores de "O Mestre do Mestre.pdf" adaptado para esse tema de ciência de dados "Trabalho-MD 2.pdf", eu quero criatividade com várias artes seja ousado

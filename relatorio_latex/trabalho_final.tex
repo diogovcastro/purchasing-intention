@@ -80,7 +80,7 @@ loja aja enquanto o visitante ainda está no site: oferecer um cupom, exibir uma
 ou simplesmente não gastar recursos de marketing com quem já vai comprar. Por isso, prever a intenção de compra é um
 problema de classificação com aplicação direta no negócio.
 
-Neste trabalho, o problema investigado é um problema de \textbf{classificação binária supervisionada}: dado o registro
+Neste trabalho, o problema investigado é um problema de classificação binária supervisionada: dado o registro
 de uma sessão de navegação (páginas visitadas, tempo em cada tipo de página, métricas do Google Analytics, data e
 perfil técnico do visitante), prever se a sessão terminou em compra (\atr{Revenue} = True) ou não (\atr{Revenue} =
 False). Um aspecto central do problema é o desbalanceamento: apenas 15,5\% das sessões terminam em compra, e é
@@ -328,8 +328,7 @@ semente 42.
 
 \subsection{Algoritmos de classificação}
 
-Foram usados quatro algoritmos. O KNN foi visto em sala de aula e é descrito de forma resumida. O Random Forest, o
-Gradient Boosting e a rede neural MLP não foram vistos em sala e são descritos em detalhe, com pseudocódigo. Os
+Foram usados quatro algoritmos. Os
 parâmetros testados para cada algoritmo estão na Tabela~\ref{tab:grade}.
 
 \subsubsection*{1) KNN (k vizinhos mais próximos)}
@@ -338,7 +337,9 @@ parâmetros testados para cada algoritmo estão na Tabela~\ref{tab:grade}.
 classificar uma sessão nova, calcula a distância dela até todas as sessões de treino, seleciona as $k$ mais próximas
 e atribui a classe mais votada entre elas. O voto pode ser uniforme ou ponderado pelo inverso da distância, e a
 probabilidade de compra é a fração (ponderada) de vizinhos compradores. A distância usada é a de Minkowski, que com
-$p = 1$ é a distância de Manhattan e com $p = 2$ é a euclidiana.
+$p = 1$ é a distância de Manhattan e com $p = 2$ é a euclidiana. Os dois valores de $p$ foram testados na busca em
+grade (Tabela~\ref{tab:grade}), e o modelo final usa a distância de Manhattan ($p = 1$), que obteve F1 maior que a
+euclidiana em todos os valores de $k$ testados (Seção~\ref{sec:resultados_grade}).
 
 \textbf{Justificativa.} É um classificador simples, não paramétrico e sem suposições sobre a forma da fronteira de
 decisão, o que o torna uma boa referência. Como depende de distâncias, também mostra o efeito do pré-processamento
@@ -352,7 +353,7 @@ atributo influenciam a decisão.
 numéricos, one-hot com agrupamento de categorias raras e sobreamostragem. O KNN exige atributos numéricos e na mesma
 escala, pois um atributo com valores grandes dominaria a distância.
 
-\subsubsection*{2) Random Forest (não visto em sala)}
+\subsubsection*{2) Random Forest }
 
 \textbf{Funcionamento.} O Random Forest (Breiman, 2001) é um conjunto (\textit{ensemble}) de árvores de decisão cujas
 previsões são combinadas por votação. Uma árvore de decisão divide as sessões de forma recursiva: em cada nó, escolhe
@@ -422,7 +423,7 @@ o mínimo de instâncias por folha. Os dois últimos limitam o quanto cada árvo
 \textbf{Pré-processamento necessário.} Apenas a conversão de \atr{Month} e \atr{VisitorType} em códigos inteiros. Os
 demais atributos são usados como estão, e o desbalanceamento é tratado com \atr{class\_weight="balanced"}.
 
-\subsubsection*{3) Gradient Boosting (não visto em sala)}
+\subsubsection*{3) Gradient Boosting}
 
 \textbf{Funcionamento.} O Gradient Boosting (Friedman, 2001) também combina árvores de decisão, mas de forma
 sequencial: cada nova árvore é treinada para corrigir os erros do conjunto formado pelas árvores anteriores. O modelo
@@ -492,7 +493,7 @@ Taxas maiores com muitas árvores tendem a sobreajustar; taxas menores precisam 
 \textbf{Pré-processamento necessário.} Apenas a conversão dos atributos categóricos em códigos para o tratamento
 nativo. O desbalanceamento é tratado com \atr{class\_weight="balanced"}.
 
-\subsubsection*{4) Rede neural MLP -- Multilayer Perceptron (não visto em sala)}
+\subsubsection*{4) Rede neural MLP -- Multilayer Perceptron}
 
 \textbf{Funcionamento.} O MLP é uma rede neural formada por camadas de neurônios totalmente conectadas. Neste trabalho
 a rede tem três camadas: a de entrada, com uma posição para cada uma das 55 colunas produzidas pelo
@@ -666,23 +667,24 @@ limiar. Um modelo sem conhecimento atinge a proporção de compradores ($\approx
   \text{PR-AUC} = \sum_{n} \left(R_n - R_{n-1}\right) P_n
 \end{equation*}
 
-\textbf{ROC-AUC}: área sob a curva da taxa de verdadeiros positivos (revocação) contra a taxa de falsos positivos
-(TFP), variando o limiar. Equivale à probabilidade de uma sessão com compra, sorteada ao acaso, receber probabilidade
-maior que uma sessão sem compra. Um modelo sem conhecimento atinge 0,5.
-\begin{equation*}
-  \text{TFP} = \frac{FP}{FP + VN}, \qquad \text{ROC-AUC} = \int_0^1 \text{Revocação}\; d(\text{TFP})
-\end{equation*}
-
-Também são reportadas, apenas como informação, a \textbf{acurácia} (fração de todas as sessões classificadas
-corretamente), a \textbf{acurácia balanceada} (média das revocações das duas classes) e o \textbf{MCC} (coeficiente de
-correlação de Matthews entre a classe prevista e a real, de $-1$ a 1, que usa as quatro células da matriz de
-confusão).
-
-\textbf{Escolha das medidas.} Com 84,4\% das sessões sem compra, a acurácia é enganosa: na validação cruzada, a linha
-de base que sempre responde ``não comprou'' atingiu 84,4\% de acurácia sem encontrar nenhum comprador (F1 = 0). Além
-disso, na busca em grade a acurácia escolheria, em três dos quatro algoritmos, a parametrização que encontra menos
-compradores. No MLP, por exemplo, ela escolheria uma rede sem regularização que encontra 57\% dos compradores, contra
-80\% da escolhida pelo F1. Por isso, as medidas foram escolhidas assim (Tabela~\ref{tab:medidas}):
+\textbf{Escolha das medidas.} As quatro medidas acima se concentram na classe ``comprou'', que é a de interesse do
+problema. Duas medidas muito usadas foram descartadas, e os resultados da validação cruzada mostram por quê:
+\begin{itemize}
+  \item \textbf{Acurácia} (fração de todas as sessões classificadas corretamente). Com 84,4\% das sessões sem compra,
+        ela é enganosa: a linha de base que sempre responde ``não comprou'' atingiu 84,4\% de acurácia sem encontrar
+        nenhum comprador (F1 = 0). Além disso, na busca em grade a acurácia escolheria, em três dos quatro algoritmos,
+        a parametrização que encontra menos compradores. No MLP, por exemplo, ela escolheria uma rede sem
+        regularização que encontra 57\% dos compradores, contra 80\% da escolhida pelo F1.
+  \item \textbf{ROC-AUC} (área sob a curva da revocação contra a taxa de falsos positivos,
+        $\text{TFP} = FP/(FP + VN)$, variando o limiar). Assim como a PR-AUC, mede a qualidade da ordenação das
+        sessões, mas é otimista com classes desbalanceadas: o denominador da TFP é dominado pelos milhares de
+        não-compradores, então muitos alarmes falsos ainda resultam em uma taxa baixa. Na validação cruzada, pela
+        ROC-AUC o KNN (0,850) percorreu 70\% do caminho entre o acaso (0,5) e o modelo perfeito, contra 86\% do Random
+        Forest, e parece não estar tão distante dele. Pela PR-AUC, o KNN percorreu só 44\% do caminho, contra 70\% do
+        Random Forest. A PR-AUC usa a precisão, que cai assim que os alarmes falsos se acumulam, e por isso mostra a
+        diferença real entre os modelos.
+\end{itemize}
+Assim, as medidas ficaram com os papéis da Tabela~\ref{tab:medidas}.
 
 \begin{table}[H]
   \centering\small
@@ -700,9 +702,8 @@ compradores. No MLP, por exemplo, ela escolheria uma rede sem regularização qu
     Precisão e revocação & Complementares & Mostram se o modelo erra mais por alarmes falsos ou por compradores
       perdidos.\\
     Matriz de confusão & Complementar & Mostra os quatro tipos de acerto e erro em números absolutos.\\
-    Acurácia, acurácia balanceada, ROC-AUC e MCC & Apenas informativas & A acurácia é enganosa; a acurácia
-      balanceada ignora a precisão; a ROC-AUC é otimista com classes desbalanceadas (denominador da TFP dominado pelos
-      não-compradores); o MCC é adequado, mas ordena os algoritmos como o F1.\\
+    Acurácia & Não usada & Enganosa com classes desbalanceadas: premia o modelo que nunca prevê uma compra.\\
+    ROC-AUC & Não usada & Otimista com classes desbalanceadas; a PR-AUC mede a mesma ordenação sem esse problema.\\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -710,7 +711,7 @@ compradores. No MLP, por exemplo, ela escolheria uma rede sem regularização qu
 % ============================================================================= IV
 \section{Resultados e discussão}
 
-\subsection{Resultados da busca em grade (validação cruzada no treino)}
+\subsection{Resultados da busca em grade (validação cruzada no treino)}\label{sec:resultados_grade}
 
 As linhas de base definem o ponto de partida: a que sempre responde ``não comprou'' tem F1 = 0 e 84,4\% de acurácia, e
 a que sorteia a resposta tem F1 = 0,154 e PR-AUC = 0,156. Todos os algoritmos ficaram muito acima dessas referências.
@@ -773,27 +774,24 @@ A Tabela~\ref{tab:melhores} mostra a melhor parametrização de cada algoritmo, 
 
 \subsection{Resultados no conjunto de teste}
 
-A Tabela~\ref{tab:comparativa} é a tabela comparativa final, com todas as medidas calculadas no teste para a melhor
-parametrização de cada algoritmo. A coluna ``F1 (val. cruz.)'' repete a estimativa da validação cruzada: em todos os
+A Tabela~\ref{tab:comparativa} é a tabela comparativa final, com as quatro medidas escolhidas calculadas no teste
+para a melhor parametrização de cada algoritmo. A coluna ``F1 (val. cruzada)'' repete a estimativa da validação cruzada: em todos os
 algoritmos, o F1 no teste ficou a no máximo 0,02 dela, o que confirma que a escolha dos parâmetros não foi
 sobreajustada.
 
 \begin{table}[H]
-  \centering\footnotesize
-  \setlength{\tabcolsep}{3pt}
-  \caption{Tabela comparativa no conjunto de teste (2.441 sessões, 382 com compra), ordenada pelo F1. As duas
-           primeiras medidas são as escolhidas; em negrito, o melhor valor de cada medida.}
+  \centering\small
+  \caption{Tabela comparativa no conjunto de teste (2.441 sessões, 382 com compra), ordenada pelo F1. Em negrito, o
+           melhor valor de cada medida.}
   \label{tab:comparativa}
-  \begin{tabular}{lccccccccc}
+  \begin{tabular}{lccccc}
     \toprule
-    Algoritmo & F1 & PR-AUC & \celula{F1 (val.\\cruz.)} & Precisão & Revocação & Acurácia & \celula{Acurácia\\balanceada}
-      & ROC-AUC & MCC\\
+    Algoritmo & F1 & PR-AUC & Precisão & Revocação & F1 (val. cruzada)\\
     \midrule
-    Random Forest & \textbf{0,683} & \textbf{0,739} & 0,681 & \textbf{0,633} & 0,741 & \textbf{0,892} & 0,831
-      & \textbf{0,928} & \textbf{0,621}\\
-    Gradient Boosting & 0,666 & 0,727 & 0,668 & 0,588 & 0,767 & 0,880 & 0,834 & 0,927 & 0,602\\
-    MLP & 0,655 & 0,710 & 0,646 & 0,549 & \textbf{0,814} & 0,866 & \textbf{0,845} & 0,926 & 0,594\\
-    KNN & 0,535 & 0,555 & 0,515 & 0,403 & 0,796 & 0,783 & 0,788 & 0,861 & 0,453\\
+    Random Forest & \textbf{0,683} & \textbf{0,739} & \textbf{0,633} & 0,741 & 0,681\\
+    Gradient Boosting & 0,666 & 0,727 & 0,588 & 0,767 & 0,668\\
+    MLP & 0,655 & 0,710 & 0,549 & \textbf{0,814} & 0,646\\
+    KNN & 0,535 & 0,555 & 0,403 & 0,796 & 0,515\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -837,10 +835,10 @@ A Figura~\ref{fig:curvas} mostra as curvas de precisão $\times$ revocação, cu
 \subsection{Discussão}
 
 \textbf{Qual algoritmo apresentou o melhor desempenho? A resposta depende da medida?} O Random Forest foi o melhor
-pelas duas medidas escolhidas (F1 = 0,683 e PR-AUC = 0,739) e também pela precisão, acurácia, ROC-AUC e MCC. A
-resposta, porém, depende da medida: pela revocação e pela acurácia balanceada, o melhor seria o MLP (0,814 e 0,845),
-porque ele prevê mais compras e, assim, encontra mais compradores; pela ROC-AUC, Random Forest, Gradient Boosting e MLP
-ficam praticamente empatados (0,926 a 0,928). Além disso, a diferença entre Random Forest e Gradient Boosting (0,017
+pelas duas medidas principais (F1 = 0,683 e PR-AUC = 0,739) e também pela precisão (0,633). A resposta, porém, depende
+da medida: pela revocação, o melhor seria o MLP (0,814), porque ele prevê mais compras e, assim, encontra mais
+compradores, à custa de mais alarmes falsos. É por isso que a decisão foi tomada pelo F1, que equilibra precisão e
+revocação. Além disso, a diferença entre Random Forest e Gradient Boosting (0,017
 de F1) é menor que o desvio padrão entre os folds, então os dois estão praticamente empatados; o KNN ficou claramente
 atrás em todas as medidas, exceto a revocação.
 
@@ -856,8 +854,9 @@ tantos compradores quanto o MLP, mas à custa de 451 alarmes falsos, o que derru
 
 \textbf{O desbalanceamento influenciou a avaliação?} Sim, de três formas. Primeiro, tornou a acurácia enganosa: 84,4\%
 é atingido sem encontrar nenhum comprador, e a acurácia escolheria parametrizações que encontram menos compradores.
-Segundo, deixou a ROC-AUC otimista: pela ROC-AUC, o KNN (0,861) parece próximo dos demais, mas pela PR-AUC a diferença
-aparece (0,555 contra 0,739), porque a taxa de falsos positivos é diluída pelos milhares de não-compradores. Terceiro,
+Segundo, deixou a ROC-AUC otimista: por ela, o KNN parece próximo dos demais (70\% do caminho até o modelo perfeito,
+contra 86\% do Random Forest), mas pela PR-AUC a diferença aparece (44\% contra 70\%), porque a taxa de falsos positivos
+é diluída pelos milhares de não-compradores. Terceiro,
 o tratamento do desbalanceamento (sobreamostragem e \atr{class\_weight}) desloca os modelos a favor da classe
 ``comprou'': em todos os algoritmos a revocação ficou maior que a precisão, ou seja, os modelos preferem gerar alarmes
 falsos a perder compradores.
