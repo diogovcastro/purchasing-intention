@@ -1,0 +1,11 @@
+,media_duplicatas,mediana_duplicatas,media_base
+Administrative,0.0000,0.0000,2.3152
+Administrative_Duration,0.0000,0.0000,80.8186
+Informational,0.0000,0.0000,0.5036
+Informational_Duration,0.0000,0.0000,34.4724
+ProductRelated,1.0560,1.0000,31.7315
+ProductRelated_Duration,0.0000,0.0000,1194.7462
+BounceRates,0.2000,0.2000,0.0222
+ExitRates,0.2000,0.2000,0.0431
+PageValues,0.0000,0.0000,5.8893
+SpecialDay,0.0112,0.0000,0.0614
