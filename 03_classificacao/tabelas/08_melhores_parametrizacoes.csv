@@ -1,0 +1,5 @@
+algoritmo,configuracao,f1,pr_auc,precisao,revocacao,f1_dp,pr_auc_dp
+KNN,"n_neighbors=51, weights=distance, p=1",0.5145,0.5138,0.3921,0.7491,0.0184,0.0298
+Random Forest,"n_estimators=300, max_features=sqrt, max_depth=None, min_samples_leaf=1",0.6815,0.7381,0.6342,0.7373,0.0362,0.0322
+Gradient Boosting,"learning_rate=0.05, max_iter=300, max_depth=None",0.6685,0.7386,0.6016,0.7529,0.0336,0.0340
+MLP,"hidden_layer_sizes=(50,), alpha=1.0, activation=relu",0.6461,0.7004,0.5406,0.8041,0.0313,0.0371

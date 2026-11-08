@@ -1,0 +1,5 @@
+algoritmo,verdadeiro_negativo,falso_positivo,falso_negativo,verdadeiro_positivo
+Random Forest,1895,164,99,283
+Gradient Boosting,1854,205,89,293
+MLP,1803,256,71,311
+KNN,1608,451,78,304

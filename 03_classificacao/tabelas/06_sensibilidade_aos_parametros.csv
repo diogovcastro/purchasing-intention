@@ -1,0 +1,5 @@
+algoritmo,combinacoes,f1_pior,f1_melhor,amplitude,dp_medio_entre_folds
+KNN,20,0.4203,0.5145,0.0942,0.0212
+Random Forest,16,0.6597,0.6815,0.0218,0.0296
+Gradient Boosting,18,0.6496,0.6685,0.0189,0.0318
+MLP,18,0.5563,0.6461,0.0898,0.0317
