@@ -1,0 +1,13 @@
+[project]
+name = "trabalho-mineracao-dados"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "imbalanced-learn>=0.14.2",
+    "ipykernel>=7.4.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
+    "scikit-learn>=1.9.1",
+]
