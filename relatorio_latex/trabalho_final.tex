@@ -956,4 +956,127 @@ semelhante. O Gradient Boosting é uma alternativa praticamente equivalente.
         (\url{https://docs.astral.sh/uv}).
 \end{list}
 
+% ============================================================================= VII
+\section{Uso de ferramentas de Inteligência Artificial Generativa}
+
+% bloco de prompt: texto reproduzido sem alterações, com quebra de linha permitida após o sublinhado
+\makeatletter
+\newenvironment{prompt}[1]
+  {\par\medskip\noindent\textbf{#1}\par\nobreak\@beginparpenalty=\@M
+   \begin{quote}\small\renewcommand{\_}{\textunderscore\allowbreak}}
+  {\end{quote}}
+\makeatother
+\newcommand{\responde}[1]{\par\smallskip\noindent\textit{Resultado responde:} #1}
+
+\subsection*{Ferramentas utilizadas}
+\begin{itemize}
+  \item Claude Opus 5.5;
+  \item GPT Sol 6.1.
+\end{itemize}
+
+\subsection*{Finalidade do uso e etapas em que foram empregadas}
+
+Primeiro, o grupo definiu os algoritmos e a forma de abordar cada problema. Dentro desse escopo inicial, as LLMs foram
+utilizadas para:
+\begin{itemize}
+  \item entender melhor as características dos atributos da base de dados;
+  \item implementar o código em todas as etapas do trabalho (análise exploratória, pré-processamento, classificação e
+        avaliação);
+  \item ajudar no refinamento do relatório;
+  \item elaborar os slides da apresentação.
+\end{itemize}
+As propostas de melhoria sugeridas pelas ferramentas foram aceitas quando o grupo as considerou interessantes.
+
+\subsection*{Prompts utilizados}
+
+\begin{prompt}{Prompt 001}
+Dados os atributos e o link a seguir quero que você leia descrição em inglês e me retorne a descrição específica de
+cada um dos atributos:
+
+Atributos: Administrative, Administrative\_Duration, Informational, Informational\_Duration, ProductRelated,
+ProductRelated\_Duration, BounceRates, ExitRates, PageValues, SpecialDay, Month, OperatingSystems, Browser, Region,
+TrafficType, VisitorType, Weekend, Revenue
+
+Link: \url{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}
+\responde{A, Descrição dos atributos}
+\end{prompt}
+
+\begin{prompt}{Prompt 002}
+Gere um notebook de analise exploratória analisando o desbalanceamento das classes, valores ausentes, duplicadas,
+outliers e de ideia de outras possíveis inconsistências para eu analisar. Escreva um código também com gráficos e
+tabelas para eu compreender melhor os dados.
+\responde{A, análise da distribuição das classes, identificação de valores ausentes, duplicatas, possíveis
+inconsistências e outras características relevantes, gráficos ou tabelas que contribuam para a compreensão dos dados.}
+\end{prompt}
+
+\begin{prompt}{Prompt 003}
+Com na nossa analise do EDA faça a implementação do que esta sendo dito:
+\begin{itemize}
+  \item[--] Remover duplicatas para todos os algoritmos. Com base na EDA, verificamos que alguns registros estão
+        duplicados. Devemos fazer sua remoção principalmente porque vamos usar o k-fold cross validation.
+  \item[--] Remover dimensões para os algoritmos KNN e MLP. Com base no gráfico de correlações, verificamos uma
+        correlação clara entre os pares (Administrative, Administrative\_Duration), (Informational,
+        Informational\_Duration) e (ProductRelated, ProductRelated\_Duration).
+  \item[--] Usar min-max no KNN, para os atributos ficarem na mesma escala.
+  \item[--] Usar padronização (z-score) no MLP, para os atributos numéricos ficarem centrados em 0 e com desvio padrão
+        1. A rede aprende por gradiente, e entradas em escalas muito diferentes deixam o treino instável e lento: por
+        exemplo, ProductRelated\_Duration chega a 63.973, enquanto ExitRates não passa de 0,2.
+  \item[--] Usar one-hot no KNN e no MLP para converter os atributos categóricos em numéricos, já que vamos usar uma
+        métrica de distância, que só lida com números.
+  \item[--] Manter os atributos categóricos como códigos inteiros no Random Forest. OperatingSystems, Browser, Region
+        e TrafficType já são inteiros; Month e VisitorType precisam ser convertidos em códigos. As árvores dividem os
+        dados por limiares e não calculam distâncias, então os códigos funcionam e ainda permitem separar grupos de
+        categorias. Com one-hot, o TrafficType viraria 20 colunas binárias, cada uma raramente escolhida para divisão.
+  \item[--] Agrupar categorias raras no KNN e no MLP, com o objetivo de reduzir o ruído nos algoritmos.
+  \item[--] Tratar o desbalanceamento em todos os algoritmos. Com base na EDA, verificamos que 84,5\% das sessões são
+        ``não comprou'' e 15,5\% são ``comprou'' (razão de 5,5 : 1). Sem tratamento, os algoritmos tendem a favorecer
+        a classe majoritária: um classificador que sempre responde ``não comprou'' já acerta 84,5\%.
+        \begin{itemize}
+          \item[--] KNN: sobreamostragem da classe minoritária, aplicada só nos folds de treino do k-fold. O KNN não
+                aceita pesos por classe, e com 84,5\% de ``não comprou'' os vizinhos mais próximos tendem a ser dessa
+                classe. Deve-se usar o SMOTENC ou a sobreamostragem aleatória, porque o SMOTE comum interpolaria as
+                colunas one-hot e criaria valores sem sentido, como 0,4.
+          \item[--] Random Forest: class\_weight=\textquotedbl balanced\textquotedbl, que dá a cada classe um peso
+                inversamente proporcional à sua frequência. Assim, errar uma sessão ``comprou'' pesa cerca de 5,5
+                vezes mais, sem alterar os dados.
+          \item[--] Gradient Boosting: class\_weight=\textquotedbl balanced\textquotedbl, pelo mesmo motivo do Random
+                Forest.
+          \item[--] MLP: sobreamostragem da classe minoritária, aplicada só nos folds de treino, já que o
+                MLPClassifier do scikit-learn não aceita pesos por classe.
+        \end{itemize}
+\end{itemize}
+\end{prompt}
+
+\begin{prompt}{Prompt 004}
+Agora com base no que foi feito no pre-processamento implemente o código testando diferentes parâmetros para cada
+algoritmo, use as métricas de precisão, recall, f1-score, PR-AUC e faça uma matriz de confusão no final.
+\end{prompt}
+
+\begin{prompt}{Prompt 005}
+Revise o relatório procurando oportunidades de melhoria.
+\end{prompt}
+
+\begin{prompt}{Prompt 006}
+Agora gere o .tex e .pdf usando latex, as matrizes de confusão devem estar em um 2x2 (2 matrizes por linha) ao invez
+de uma linha (melhorar vizualização sem alterar matrizes), não precisa colocar a formula de mcc, acurácia, acurácia
+balanceada. Também edite o arquivo docx com essas alterações e o exporte para pdf.
+\end{prompt}
+
+\begin{prompt}{Prompt Slides}
+Refaça os slides usando a paleta de cores de ``O Mestre do Mestre.pdf'' adaptado para esse tema de ciência de dados
+``Trabalho-MD 2.pdf'', eu quero criatividade com várias artes seja ousado
+\end{prompt}
+
+\subsection*{Como as respostas foram verificadas}
+
+\begin{itemize}
+  \item \textbf{Planejamento antes de cada etapa.} Antes da implementação de cada etapa, o grupo fez um planejamento
+        prévio com base no seu conhecimento em mineração de dados, descartando as ideias que fugiam do escopo.
+  \item \textbf{Código documentado nos notebooks.} O Jupyter Notebook foi escolhido para que o agente escrevesse, antes
+        de cada célula de código, uma descrição em alto nível do que ela implementa, usando tabelas e gráficos quando
+        necessário para facilitar a compreensão.
+  \item \textbf{Revisão depois de cada etapa.} Uma vez implementado o código de cada etapa, o grupo fez uma reflexão
+        sobre o que foi construído, analisando cada célula de markdown e de código, as tabelas e os gráficos.
+\end{itemize}
+
 \end{document}
