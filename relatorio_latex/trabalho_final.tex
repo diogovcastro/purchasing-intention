@@ -4,6 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[brazil]{babel}
+\usepackage{indentfirst}
 \usepackage{lmodern}
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{microtype}
@@ -924,39 +925,6 @@ semelhante. O Gradient Boosting é uma alternativa praticamente equivalente.
 \end{itemize}
 
 % ============================================================================= VI
-\section{Referências}
-
-\begin{list}{}{\setlength{\leftmargin}{1.2em}\setlength{\itemindent}{-1.2em}\setlength{\itemsep}{4pt}}
-  \item BREIMAN, L. Random forests. \textit{Machine Learning}, v. 45, n. 1, p. 5--32, 2001.
-  \item FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine. \textit{The Annals of
-        Statistics}, v. 29, n. 5, p. 1189--1232, 2001.
-  \item HARRIS, C. R. et al. Array programming with NumPy. \textit{Nature}, v. 585, p. 357--362, 2020.
-  \item HUNTER, J. D. Matplotlib: a 2D graphics environment. \textit{Computing in Science \& Engineering}, v. 9, n. 3,
-        p. 90--95, 2007.
-  \item KE, G. et al. LightGBM: a highly efficient gradient boosting decision tree. In: \textit{Advances in Neural
-        Information Processing Systems 30 (NIPS 2017)}, 2017.
-  \item KINGMA, D. P.; BA, J. Adam: a method for stochastic optimization. In: \textit{International Conference on
-        Learning Representations (ICLR)}, 2015.
-  \item LEMAÎTRE, G.; NOGUEIRA, F.; ARIDAS, C. K. Imbalanced-learn: a Python toolbox to tackle the curse of imbalanced
-        datasets in machine learning. \textit{Journal of Machine Learning Research}, v. 18, n. 17, p. 1--5, 2017.
-  \item MCKINNEY, W. Data structures for statistical computing in Python. In: \textit{Proceedings of the 9th Python in
-        Science Conference}, p. 56--61, 2010.
-  \item PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. \textit{Journal of Machine Learning Research},
-        v. 12, p. 2825--2830, 2011.
-  \item RUMELHART, D. E.; HINTON, G. E.; WILLIAMS, R. J. Learning representations by back-propagating errors.
-        \textit{Nature}, v. 323, p. 533--536, 1986.
-  \item SAITO, T.; REHMSMEIER, M. The precision-recall plot is more informative than the ROC plot when evaluating
-        binary classifiers on imbalanced datasets. \textit{PLoS ONE}, v. 10, n. 3, e0118432, 2015.
-  \item SAKAR, C. O.; POLAT, S. O.; KATIRCIOGLU, M.; KASTRO, Y. Real-time prediction of online shoppers' purchasing
-        intention using multilayer perceptron and LSTM recurrent neural networks. \textit{Neural Computing and
-        Applications}, v. 31, p. 6893--6908, 2019.
-  \item SAKAR, C. O.; KASTRO, Y. Online Shoppers Purchasing Intention Dataset. UCI Machine Learning Repository, 2018.
-        Disponível em: \url{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}.
-  \item Ferramentas: Python 3.13 (\url{https://www.python.org}), Jupyter (\url{https://jupyter.org}) e uv
-        (\url{https://docs.astral.sh/uv}).
-\end{list}
-
-% ============================================================================= VII
 \section{Uso de ferramentas de Inteligência Artificial Generativa}
 
 % bloco de prompt: texto reproduzido sem alterações, com quebra de linha permitida após o sublinhado
@@ -966,7 +934,6 @@ semelhante. O Gradient Boosting é uma alternativa praticamente equivalente.
    \begin{quote}\small\renewcommand{\_}{\textunderscore\allowbreak}}
   {\end{quote}}
 \makeatother
-\newcommand{\responde}[1]{\par\smallskip\noindent\textit{Resultado responde:} #1}
 
 \subsection*{Ferramentas utilizadas}
 \begin{itemize}
@@ -998,15 +965,12 @@ ProductRelated\_Duration, BounceRates, ExitRates, PageValues, SpecialDay, Month,
 TrafficType, VisitorType, Weekend, Revenue
 
 Link: \url{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}
-\responde{A, Descrição dos atributos}
 \end{prompt}
 
 \begin{prompt}{Prompt 002}
 Gere um notebook de analise exploratória analisando o desbalanceamento das classes, valores ausentes, duplicadas,
 outliers e de ideia de outras possíveis inconsistências para eu analisar. Escreva um código também com gráficos e
 tabelas para eu compreender melhor os dados.
-\responde{A, análise da distribuição das classes, identificação de valores ausentes, duplicatas, possíveis
-inconsistências e outras características relevantes, gráficos ou tabelas que contribuam para a compreensão dos dados.}
 \end{prompt}
 
 \begin{prompt}{Prompt 003}
@@ -1078,5 +1042,38 @@ Refaça os slides usando a paleta de cores de ``O Mestre do Mestre.pdf'' adaptad
   \item \textbf{Revisão depois de cada etapa.} Uma vez implementado o código de cada etapa, o grupo fez uma reflexão
         sobre o que foi construído, analisando cada célula de markdown e de código, as tabelas e os gráficos.
 \end{itemize}
+
+% ============================================================================= VII
+\section{Referências}
+
+\begin{list}{}{\setlength{\leftmargin}{1.2em}\setlength{\itemindent}{-1.2em}\setlength{\itemsep}{4pt}}
+  \item BREIMAN, L. Random forests. \textit{Machine Learning}, v. 45, n. 1, p. 5--32, 2001.
+  \item FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine. \textit{The Annals of
+        Statistics}, v. 29, n. 5, p. 1189--1232, 2001.
+  \item HARRIS, C. R. et al. Array programming with NumPy. \textit{Nature}, v. 585, p. 357--362, 2020.
+  \item HUNTER, J. D. Matplotlib: a 2D graphics environment. \textit{Computing in Science \& Engineering}, v. 9, n. 3,
+        p. 90--95, 2007.
+  \item KE, G. et al. LightGBM: a highly efficient gradient boosting decision tree. In: \textit{Advances in Neural
+        Information Processing Systems 30 (NIPS 2017)}, 2017.
+  \item KINGMA, D. P.; BA, J. Adam: a method for stochastic optimization. In: \textit{International Conference on
+        Learning Representations (ICLR)}, 2015.
+  \item LEMAÎTRE, G.; NOGUEIRA, F.; ARIDAS, C. K. Imbalanced-learn: a Python toolbox to tackle the curse of imbalanced
+        datasets in machine learning. \textit{Journal of Machine Learning Research}, v. 18, n. 17, p. 1--5, 2017.
+  \item MCKINNEY, W. Data structures for statistical computing in Python. In: \textit{Proceedings of the 9th Python in
+        Science Conference}, p. 56--61, 2010.
+  \item PEDREGOSA, F. et al. Scikit-learn: machine learning in Python. \textit{Journal of Machine Learning Research},
+        v. 12, p. 2825--2830, 2011.
+  \item RUMELHART, D. E.; HINTON, G. E.; WILLIAMS, R. J. Learning representations by back-propagating errors.
+        \textit{Nature}, v. 323, p. 533--536, 1986.
+  \item SAITO, T.; REHMSMEIER, M. The precision-recall plot is more informative than the ROC plot when evaluating
+        binary classifiers on imbalanced datasets. \textit{PLoS ONE}, v. 10, n. 3, e0118432, 2015.
+  \item SAKAR, C. O.; POLAT, S. O.; KATIRCIOGLU, M.; KASTRO, Y. Real-time prediction of online shoppers' purchasing
+        intention using multilayer perceptron and LSTM recurrent neural networks. \textit{Neural Computing and
+        Applications}, v. 31, p. 6893--6908, 2019.
+  \item SAKAR, C. O.; KASTRO, Y. Online Shoppers Purchasing Intention Dataset. UCI Machine Learning Repository, 2018.
+        Disponível em: \url{https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset}.
+  \item Ferramentas: Python 3.13 (\url{https://www.python.org}), Jupyter (\url{https://jupyter.org}) e uv
+        (\url{https://docs.astral.sh/uv}).
+\end{list}
 
 \end{document}
